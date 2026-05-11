@@ -333,7 +333,7 @@
   // CONFIG — Google Apps Script URL'ini buraya yapıştır
   // Kurulum tamamlanana kadar bu satırı değiştirme
   // ─────────────────────────────────────────
-  const SHEET_URL = 'https://script.google.com/macros/s/AKfycby7d8p5XrAWSxxt23mIprm4CgpmcwvSg4Rzhaqwyu3pOyQe3Z0cETL9F8jUYFhVw3mj-w/exec';
+  const SHEET_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
 
   // ─────────────────────────────────────────
   // SORULAR
@@ -754,31 +754,29 @@
   function sendData(ans, profileKey, eng, share) {
     if (!SHEET_URL || SHEET_URL === 'YOUR_APPS_SCRIPT_URL_HERE') return;
     const p = PROFILES[profileKey];
-    fetch(SHEET_URL, {
-      method: 'POST',
-      mode:   'no-cors',
-      body: JSON.stringify({
-        timestamp:           new Date().toISOString(),
-        gender:              ans.gender || '',
-        ageRange:            ans.ageRange || '',
-        instagram:           ans.instagram || '',
-        skinFeeling:         ans.skinFeeling || '',
-        mainConcern:         ans.mainConcern || '',
-        skincareTime:        ans.skincareTime || '',
-        favoriteProduct:     ans.favoriteProduct || '',
-        skinTrigger:         ans.skinTrigger || '',
-        desiredResult:       ans.desiredResult || '',
-        productPersonality:  ans.productPersonality || '',
-        assignedProfile:     p.name,
-        profileId:           p.id,
-        suggestedIngredients: p.ingredients.join(', '),
-        engagementScore:     eng,
-        sharePotential:      share,
-        favoriteBrand:       ans.favoriteBrand || '',
-        favoriteItem:        ans.favoriteItem || '',
-        anticipatedBrand:    ans.anticipatedBrand || ''
-      })
-    }).catch(() => {});
+    const params = new URLSearchParams({
+      timestamp:            new Date().toISOString(),
+      gender:               ans.gender || '',
+      ageRange:             ans.ageRange || '',
+      instagram:            ans.instagram || '',
+      skinFeeling:          ans.skinFeeling || '',
+      mainConcern:          ans.mainConcern || '',
+      skincareTime:         ans.skincareTime || '',
+      favoriteProduct:      ans.favoriteProduct || '',
+      skinTrigger:          ans.skinTrigger || '',
+      desiredResult:        ans.desiredResult || '',
+      productPersonality:   ans.productPersonality || '',
+      assignedProfile:      p.name,
+      profileId:            p.id,
+      suggestedIngredients: p.ingredients.join(', '),
+      engagementScore:      String(eng),
+      sharePotential:       share,
+      favoriteBrand:        ans.favoriteBrand || '',
+      favoriteItem:         ans.favoriteItem || '',
+      anticipatedBrand:     ans.anticipatedBrand || ''
+    });
+    fetch(SHEET_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' })
+      .catch(() => {});
   }
   </script>
 </body>
