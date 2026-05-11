@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Seoul Skin Profile — Chae Lee</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg:        #FAFAF8;
+      --white:     #FFFFFF;
+      --text-1:    #1A1A1A;
+      --text-2:    #6B6B6B;
+      --text-3:    #9CA3AF;
+      --gold:      #C4A882;
+      --gold-pale: #F0E8DC;
+      --border:    #E8E3DB;
+      --btn:       #1A1A1A;
+      --r-sm: 12px;
+      --r-md: 16px;
+      --r-lg: 24px;
+      --ease: cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    html, body { height:100%; width:100%; overflow:hidden; background:var(--bg); }
+    body { font-family:'DM Sans', sans-serif; color:var(--text-1); }
+
+    /* ── PROGRESS ── */
+    #progress-bar {
+      position: fixed; top:0; left:0; right:0; height:2px;
+      background: var(--border); z-index:200; display:none;
+    }
+    #progress-fill {
+      height:100%; background:var(--gold); width:0%;
+      transition: width 0.5s var(--ease);
+    }
+
+    /* ── SCREENS ── */
+    .screen {
+      position:absolute; inset:0;
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      padding:28px 24px;
+      opacity:0; pointer-events:none;
+      transition: opacity 0.4s ease;
+      overflow-y:auto; -webkit-overflow-scrolling:touch;
+    }
+    .screen.active { opacity:1; pointer-events:auto; }
+
+    /* ── WELCOME ── */
+    .w-inner { max-width:360px; width:100%; text-align:center; }
+
+    .w-eyebrow {
+      font-size:10px; letter-spacing:0.22em; text-transform:uppercase;
+      color:var(--gold); margin-bottom:36px;
+      display:flex; align-items:center; justify-content:center; gap:10px;
+    }
+    .w-eyebrow::before, .w-eyebrow::after { content:'✦'; font-size:8px; }
+
+    .w-title {
+      font-family:'DM Serif Display', serif;
+      font-size:38px; line-height:1.12; letter-spacing:-0.01em;
+      color:var(--text-1); margin-bottom:18px;
+    }
+
+    .w-desc {
+      font-size:15px; font-weight:300; color:var(--text-2);
+      line-height:1.65; margin-bottom:10px;
+    }
+
+    .w-pills {
+      display:flex; justify-content:center; gap:6px;
+      flex-wrap:wrap; margin-bottom:40px;
+    }
+    .w-pill {
+      font-size:11px; color:var(--text-3); letter-spacing:0.04em;
+      background:var(--white); border:1px solid var(--border);
+      border-radius:100px; padding:5px 12px;
+    }
+
+    .btn-main {
+      display:block; width:100%;
+      background:var(--btn); color:#fff; border:none;
+      border-radius:var(--r-md); padding:18px 24px;
+      font-family:'DM Sans', sans-serif; font-size:14px; font-weight:500;
+      letter-spacing:0.04em; cursor:pointer;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+    .btn-main:active { transform:scale(0.98); opacity:0.88; }
+
+    .w-footnote { margin-top:18px; font-size:11px; color:var(--text-3); letter-spacing:0.06em; }
+
+    /* ── QUESTIONS ── */
+    #screen-questions { justify-content:flex-start; padding-top:52px; }
+
+    .q-wrapper { max-width:420px; width:100%; position:relative; min-height:calc(100dvh - 80px); }
+
+    .q-card {
+      position:absolute; top:0; left:0; width:100%;
+      opacity:0; transform:translateX(50px); pointer-events:none;
+      transition: opacity 0.35s var(--ease), transform 0.35s var(--ease);
+    }
+    .q-card.active   { opacity:1; transform:translateX(0); pointer-events:auto; }
+    .q-card.leaving  { opacity:0; transform:translateX(-50px); pointer-events:none; }
+
+    .q-num {
+      font-size:10px; letter-spacing:0.14em; text-transform:uppercase;
+      color:var(--gold); margin-bottom:14px;
+    }
+    .q-text {
+      font-family:'DM Serif Display', serif;
+      font-size:26px; line-height:1.25; color:var(--text-1);
+      margin-bottom:8px;
+    }
+    .q-sub {
+      font-size:13px; color:var(--text-3); font-weight:300; margin-bottom:28px;
+    }
+
+    /* ── OPTIONS ── */
+    .options { display:flex; flex-direction:column; gap:10px; }
+
+    .opt-btn {
+      display:flex; align-items:center; gap:14px;
+      background:var(--white); border:1.5px solid var(--border);
+      border-radius:var(--r-md); padding:15px 18px;
+      cursor:pointer; text-align:left; width:100%;
+      font-family:'DM Sans', sans-serif;
+      transition: border-color 0.15s ease, background 0.15s ease, transform 0.1s ease;
+    }
+    .opt-btn:active { transform:scale(0.985); }
+    .opt-btn.selected {
+      background:var(--text-1); border-color:var(--text-1); color:#fff;
+    }
+    .opt-btn.selected .opt-letter {
+      background:rgba(255,255,255,0.12);
+      border-color:rgba(255,255,255,0.2);
+      color:rgba(255,255,255,0.7);
+    }
+
+    .opt-letter {
+      width:28px; height:28px; border-radius:8px; flex-shrink:0;
+      background:var(--bg); border:1px solid var(--border);
+      display:flex; align-items:center; justify-content:center;
+      font-size:11px; font-weight:600; color:var(--text-3); letter-spacing:0;
+    }
+    .opt-label { font-size:14px; line-height:1.3; flex:1; }
+
+    /* ── TEXT INPUT ── */
+    .txt-wrap { display:flex; flex-direction:column; gap:14px; }
+
+    .txt-input {
+      width:100%; background:var(--white);
+      border:1.5px solid var(--border); border-radius:var(--r-md);
+      padding:18px 20px; font-family:'DM Sans', sans-serif;
+      font-size:16px; color:var(--text-1); outline:none;
+      transition: border-color 0.2s ease;
+    }
+    .txt-input:focus { border-color:var(--gold); }
+    .txt-input::placeholder { color:var(--text-3); }
+
+    .btn-continue {
+      display:block; width:100%; background:var(--btn); color:#fff; border:none;
+      border-radius:var(--r-md); padding:16px;
+      font-family:'DM Sans', sans-serif; font-size:14px; font-weight:500;
+      letter-spacing:0.03em; cursor:pointer;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+    .btn-continue:active { transform:scale(0.98); }
+
+    .btn-skip {
+      text-align:center; font-size:13px; color:var(--text-3);
+      cursor:pointer; padding:6px; transition:color 0.2s;
+    }
+    .btn-skip:hover { color:var(--text-2); }
+
+    /* ── ANALYZING ── */
+    .an-inner { text-align:center; max-width:280px; }
+
+    .an-symbol {
+      font-size:30px; color:var(--gold); margin-bottom:28px;
+      animation: glow-pulse 2s ease-in-out infinite;
+    }
+    @keyframes glow-pulse {
+      0%,100% { opacity:1; transform:scale(1); }
+      50%      { opacity:0.45; transform:scale(0.88); }
+    }
+
+    .an-title {
+      font-family:'DM Serif Display', serif;
+      font-size:22px; color:var(--text-1);
+      line-height:1.3; margin-bottom:10px;
+    }
+    .an-sub { font-size:13px; color:var(--text-3); font-weight:300; margin-bottom:32px; }
+
+    .dots { display:flex; gap:7px; justify-content:center; }
+    .dots span {
+      width:6px; height:6px; border-radius:50%; background:var(--gold);
+      animation: dot-bounce 1.2s ease-in-out infinite;
+    }
+    .dots span:nth-child(2) { animation-delay:.2s; }
+    .dots span:nth-child(3) { animation-delay:.4s; }
+    @keyframes dot-bounce {
+      0%,80%,100% { transform:scale(0.55); opacity:0.35; }
+      40%          { transform:scale(1);    opacity:1; }
+    }
+
+    /* ── RESULT ── */
+    #screen-result { justify-content:flex-start; padding:28px 20px 60px; overflow-y:auto; }
+
+    .r-card { max-width:420px; width:100%; margin:0 auto; }
+
+    .r-brand {
+      text-align:center; font-size:10px; letter-spacing:0.22em;
+      text-transform:uppercase; color:var(--gold); margin-bottom:28px;
+    }
+
+    .r-label {
+      text-align:center; font-size:10px; letter-spacing:0.15em;
+      text-transform:uppercase; color:var(--text-3); margin-bottom:10px;
+    }
+    .r-name {
+      font-family:'DM Serif Display', serif;
+      font-size:34px; text-align:center; color:var(--text-1);
+      line-height:1.15; margin-bottom:8px;
+    }
+    .r-emoji { text-align:center; font-size:28px; margin-bottom:28px; }
+
+    .r-div { height:1px; background:var(--border); margin:22px 0; }
+
+    .r-analysis {
+      font-size:15px; color:var(--text-2); text-align:center;
+      line-height:1.8; font-weight:300; font-style:italic;
+    }
+
+    .r-sec-label {
+      font-size:9px; letter-spacing:0.18em; text-transform:uppercase;
+      color:var(--gold); margin-bottom:12px;
+    }
+
+    .r-pills { display:flex; flex-wrap:wrap; gap:8px; }
+    .r-pill {
+      background:var(--bg); border:1px solid var(--border);
+      border-radius:100px; padding:6px 14px;
+      font-size:12px; color:var(--text-2); font-weight:500;
+    }
+
+    .r-routine {
+      background:var(--white); border:1px solid var(--border);
+      border-radius:var(--r-sm); padding:14px 18px;
+      font-size:13px; color:var(--text-1); font-weight:500;
+    }
+
+    .r-tagline {
+      text-align:center; font-family:'DM Serif Display', serif;
+      font-style:italic; font-size:17px; color:var(--gold);
+      letter-spacing:0.02em;
+    }
+
+    .r-cta { margin-top:32px; display:flex; flex-direction:column; gap:12px; }
+
+    .btn-share {
+      display:block; width:100%; background:var(--btn); color:#fff; border:none;
+      border-radius:var(--r-md); padding:18px;
+      font-family:'DM Sans', sans-serif; font-size:14px; font-weight:500;
+      letter-spacing:0.03em; cursor:pointer; text-align:center;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+    .btn-share:active { transform:scale(0.98); opacity:0.88; }
+
+    .btn-restart {
+      display:block; width:100%; background:transparent;
+      color:var(--text-3); border:1.5px solid var(--border);
+      border-radius:var(--r-md); padding:15px;
+      font-family:'DM Sans', sans-serif; font-size:13px;
+      cursor:pointer; text-align:center;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-restart:hover { border-color:var(--text-3); color:var(--text-2); }
+
+    .r-footer {
+      margin-top:32px; text-align:center;
+      font-size:11px; color:var(--text-3); letter-spacing:0.08em;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PROGRESS BAR -->
+  <div id="progress-bar"><div id="progress-fill"></div></div>
+
+  <!-- ━━━ SCREEN 1: WELCOME ━━━ -->
+  <div class="screen active" id="screen-welcome">
+    <div class="w-inner">
+      <div class="w-eyebrow">Chae Lee</div>
+      <h1 class="w-title">Find Your<br>Seoul Skin Profile</h1>
+      <p class="w-desc">30 saniyede cildine en uygun<br>Kore skincare profilini keşfet.</p>
+      <div class="w-pills">
+        <span class="w-pill">13 Soru</span>
+        <span class="w-pill">Kişisel Analiz</span>
+        <span class="w-pill">Ücretsiz</span>
+      </div>
+      <button class="btn-main" onclick="startQuiz()">Analizimi Başlat →</button>
+      <p class="w-footnote">Seoul Skin Lab · Chae Lee</p>
+    </div>
+  </div>
+
+  <!-- ━━━ SCREEN 2: QUESTIONS ━━━ -->
+  <div class="screen" id="screen-questions">
+    <div class="q-wrapper" id="q-wrapper"></div>
+  </div>
+
+  <!-- ━━━ SCREEN 3: ANALYZING ━━━ -->
+  <div class="screen" id="screen-analyzing">
+    <div class="an-inner">
+      <div class="an-symbol">✦</div>
+      <h2 class="an-title">Chae Lee Studio<br>Analiz Ediyor</h2>
+      <p class="an-sub">Cilt profilin hesaplanıyor...</p>
+      <div class="dots"><span></span><span></span><span></span></div>
+    </div>
+  </div>
+
+  <!-- ━━━ SCREEN 4: RESULT ━━━ -->
+  <div class="screen" id="screen-result">
+    <div class="r-card" id="r-card"></div>
+  </div>
+
+  <script>
+  // ─────────────────────────────────────────
+  // CONFIG — Google Apps Script URL'ini buraya yapıştır
+  // Kurulum tamamlanana kadar bu satırı değiştirme
+  // ─────────────────────────────────────────
+  const SHEET_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
+
+  // ─────────────────────────────────────────
+  // SORULAR
+  // ─────────────────────────────────────────
+  const QS = [
+    {
+      id:'gender', n:1, type:'choice', required:false,
+      text:'Cinsiyetin nedir?', sub:null,
+      opts:[
+        {v:'female',        l:'Kadın'},
+        {v:'male',          l:'Erkek'},
+        {v:'prefer-not',    l:'Belirtmek istemiyorum'}
+      ]
+    },
+    {
+      id:'ageRange', n:2, type:'choice', required:true,
+      text:'Yaş aralığın nedir?', sub:null,
+      opts:[
+        {v:'13-17', l:'13–17'},
+        {v:'18-24', l:'18–24'},
+        {v:'25-30', l:'25–30'},
+        {v:'31-40', l:'31–40'},
+        {v:'40plus', l:'40+'}
+      ]
+    },
+    {
+      id:'instagram', n:3, type:'text', required:false,
+      text:'Instagram hesabın?',
+      sub:'Skincare önerilerini doğrudan paylaşabiliriz ✦',
+      placeholder:'@kullaniciadi'
+    },
+    {
+      id:'skinFeeling', n:4, type:'choice', required:true,
+      text:'Gün sonunda cildin nasıl hissediyor?',
+      sub:'En yakın hissi seç',
+      opts:[
+        {v:'very-oily',    l:'Çok yağlı ve parlak'},
+        {v:'slightly-oily',l:'Hafif parlak, özellikle T-bölgede'},
+        {v:'balanced',     l:'Dengeli — ne çok yağlı ne çok kuru'},
+        {v:'dry',          l:'Kuru ve gergin'},
+        {v:'sensitive',    l:'Hassas, kızarık veya reaktif'}
+      ]
+    },
+    {
+      id:'mainConcern', n:5, type:'choice', required:true,
+      text:'Aynaya baktığında seni en çok ne rahatsız ediyor?',
+      sub:'En öncelikli sorunu seç',
+      opts:[
+        {v:'pores',       l:'Gözenekler'},
+        {v:'acne',        l:'Akne'},
+        {v:'acne-scars',  l:'Akne izleri'},
+        {v:'redness',     l:'Kızarıklık'},
+        {v:'dryness',     l:'Kuruluk ve pullanma'},
+        {v:'dull',        l:'Donuk, cansız görünüm'},
+        {v:'blackheads',  l:'Siyah noktalar'}
+      ]
+    },
+    {
+      id:'skincareTime', n:6, type:'choice', required:true,
+      text:'Skincare rutinin için ne kadar zaman ayırıyorsun?', sub:null,
+      opts:[
+        {v:'under1',  l:'1 dakikadan az — hızlı ve pratik'},
+        {v:'2-5',     l:'2–5 dakika'},
+        {v:'5-10',    l:'5–10 dakika'},
+        {v:'10plus',  l:'10+ dakika — detaylı rutin uygularım'}
+      ]
+    },
+    {
+      id:'favoriteProduct', n:7, type:'choice', required:true,
+      text:'En sevdiğin skincare ürün tipi hangisi?',
+      sub:'Skincare çekmecene baksaydın hangisi en çok olurdu?',
+      opts:[
+        {v:'serum',      l:'Serum'},
+        {v:'toner',      l:'Toner / Essence'},
+        {v:'sheet-mask', l:'Sheet Mask'},
+        {v:'cleanser',   l:'Cleanser'},
+        {v:'sunscreen',  l:'Sunscreen'},
+        {v:'moisturizer',l:'Moisturizer / Krem'},
+        {v:'cushion',    l:'Cushion / Makyaj ürünleri'}
+      ]
+    },
+    {
+      id:'skinTrigger', n:8, type:'choice', required:true,
+      text:'Cildin en çok ne zaman problem çıkarıyor?', sub:null,
+      opts:[
+        {v:'stress',    l:'Stresli olduğumda'},
+        {v:'hormonal',  l:'Hormonal dönemlerde'},
+        {v:'seasonal',  l:'Mevsim değişiminde'},
+        {v:'makeup',    l:'Yoğun makyaj sonrası'},
+        {v:'sleepless', l:'Uykusuz kaldığımda'},
+        {v:'rarely',    l:'Nadiren problem yaşarım'}
+      ]
+    },
+    {
+      id:'desiredResult', n:9, type:'choice', required:true,
+      text:"Skincare'den en çok ne istiyorsun?",
+      sub:'Hayalindeki cilt sonucu',
+      opts:[
+        {v:'glass-skin',  l:'Glass skin — ışıltılı, cam gibi görünüm'},
+        {v:'clean-pores', l:'Daha temiz, küçülmüş gözenekler'},
+        {v:'calm-skin',   l:'Daha sakin, kızarıklıksız cilt'},
+        {v:'hydration',   l:'Derin nem ve dolgunluk'},
+        {v:'bright-tone', l:'Daha parlak, aydınlık ten'},
+        {v:'acne-control',l:'Akne ve yağ kontrolü'}
+      ]
+    },
+    {
+      id:'productPersonality', n:10, type:'choice', required:true,
+      text:'Yeni bir skincare ürün görünce ilk tepkin nedir?',
+      sub:'Skincare kişiliğin nedir?',
+      opts:[
+        {v:'try-everything', l:'Her şeyi denerim — yeni ürünler heyecan verici'},
+        {v:'love-trends',    l:'Trend ürünleri severim, viral olunca alırım'},
+        {v:'research-first', l:'Önce araştırırım, sonra karar veririm'},
+        {v:'trusted-only',   l:'Sadece güvendiğim markaları kullanırım'}
+      ]
+    },
+    {
+      id:'favoriteBrand', n:11, type:'text', required:false,
+      text:'Bu etkinlikte en beğendiğin marka hangisi oldu?',
+      sub:'Etkinlikte keşfettiğin markayı bizimle paylaş ✦',
+      placeholder:'Marka adını yaz...'
+    },
+    {
+      id:'favoriteItem', n:12, type:'text', required:false,
+      text:'En çok beğendiğin ürün hangisi oldu?',
+      sub:'Seni en çok etkileyen ürünü yaz ✦',
+      placeholder:'Ürün adını yaz...'
+    },
+    {
+      id:'anticipatedBrand', n:13, type:'text', required:false,
+      text:'Merakla beklediğin başka bir marka var mı?',
+      sub:'Görmek istediğin bir marka varsa yaz, bize ilham ver ✦',
+      placeholder:'Marka adını yaz...'
+    }
+  ];
+
+  // ─────────────────────────────────────────
+  // PROFİL VERİTABANI
+  // ─────────────────────────────────────────
+  const PROFILES = {
+    'glass-skin': {
+      id:'P1', name:'Glass Skin Type', emoji:'✨',
+      analysis:'Cildin cam gibi parlamaya hazır.\nHydration layering sistemi tam sana göre.',
+      ingredients:['Niacinamide','Hyaluronic Acid','Galactomyces','Rice Extract'],
+      routine:'5-step hydration layering',
+      tagline:'Illuminate. Hydrate. Glow.'
+    },
+    'barrier-care': {
+      id:'P2', name:'Barrier Care Type', emoji:'🌿',
+      analysis:'Cildin seni anlıyor — daha az, daha iyi.\nBarrier onarımı seni dönüştürür.',
+      ingredients:['Ceramide','Panthenol','Beta-Glucan','Madecassoside'],
+      routine:'Minimal 3-step barrier protocol',
+      tagline:'Calm. Repair. Shield.'
+    },
+    'seoul-calm': {
+      id:'P3', name:'Seoul Calm Type', emoji:'🌙',
+      analysis:'Cildin iç dünyanla konuşuyor.\nSakinleş, cildin de sakinleşsin.',
+      ingredients:['BHA Salicylic Acid','Tea Tree','Centella Asiatica','Propolis'],
+      routine:'Active-calm balancing protocol',
+      tagline:'Breathe. Balance. Clear.'
+    },
+    'hydration': {
+      id:'P4', name:'Hydration Type', emoji:'💧',
+      analysis:'Cildin su içiyor ama hâlâ susuz.\nMoisture sandwich tekniği hayatını değiştirir.',
+      ingredients:['Hyaluronic Acid','Glycerin','Squalane','Snail Mucin'],
+      routine:'Moisture layering + sleeping pack',
+      tagline:'Drench. Seal. Plump.'
+    },
+    'cherry-glow': {
+      id:'P5', name:'Cherry Glow Type', emoji:'🍒',
+      analysis:'Cildin ışığa hazır, sadece doğru aktifi bekliyor.\nBrightening sana çok yakışacak.',
+      ingredients:['Vitamin C','Niacinamide','Alpha Arbutin','AHA'],
+      routine:'Glow protocol — Exfoliate & Brighten',
+      tagline:'Reveal. Radiate. Glow.'
+    },
+    'pore-reset': {
+      id:'P6', name:'Pore Reset Type', emoji:'🔬',
+      analysis:"Gözeneklerin bir reset programı bekliyor.\nKore'nin double cleanse ritüeli seni bekliyor.",
+      ingredients:['BHA Salicylic Acid','Niacinamide','Kaolin Clay','Green Tea'],
+      routine:'Double cleanse + BHA protocol',
+      tagline:'Cleanse. Control. Reset.'
+    }
+  };
+
+  // ─────────────────────────────────────────
+  // STATE
+  // ─────────────────────────────────────────
+  let S = { q:0, ans:{}, profile:null };
+
+  // ─────────────────────────────────────────
+  // SCREEN SWITCH
+  // ─────────────────────────────────────────
+  function show(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  // ─────────────────────────────────────────
+  // BAŞLAT
+  // ─────────────────────────────────────────
+  function startQuiz() {
+    S = { q:0, ans:{}, profile:null };
+    document.getElementById('progress-bar').style.display = 'block';
+    renderQ(0);
+    show('screen-questions');
+  }
+
+  // ─────────────────────────────────────────
+  // SORU RENDER
+  // ─────────────────────────────────────────
+  const LETTERS = 'ABCDEFGHIJ';
+
+  function renderQ(i) {
+    const q  = QS[i];
+    const pct = (i / QS.length) * 100;
+    document.getElementById('progress-fill').style.width = pct + '%';
+
+    let body = '';
+    if (q.type === 'choice') {
+      body = `<div class="options">${
+        q.opts.map((o, idx) => `
+          <button class="opt-btn" onclick="pick('${q.id}','${o.v}',this)">
+            <span class="opt-letter">${LETTERS[idx]}</span>
+            <span class="opt-label">${o.l}</span>
+          </button>
+        `).join('')
+      }</div>`;
+    } else {
+      body = `
+        <div class="txt-wrap">
+          <input class="txt-input" id="tinput" type="text"
+            placeholder="${q.placeholder || ''}"
+            autocomplete="off" autocorrect="off" autocapitalize="off">
+          <button class="btn-continue" onclick="submitTxt('${q.id}')">Devam →</button>
+          <div class="btn-skip" onclick="skip('${q.id}')">Atla</div>
+        </div>`;
+    }
+
+    document.getElementById('q-wrapper').innerHTML = `
+      <div class="q-card active" id="qcard">
+        <div class="q-num">${q.n} / ${QS.length}</div>
+        <div class="q-text">${q.text}</div>
+        ${q.sub ? `<div class="q-sub">${q.sub}</div>` : ''}
+        ${body}
+      </div>`;
+
+    if (q.type === 'text') {
+      setTimeout(() => { const el = document.getElementById('tinput'); if(el) el.focus(); }, 400);
+    }
+  }
+
+  // ─────────────────────────────────────────
+  // SEÇİM (choice — otomatik ilerle)
+  // ─────────────────────────────────────────
+  function pick(qid, val, btn) {
+    document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    S.ans[qid] = val;
+    setTimeout(next, 290);
+  }
+
+  // ─────────────────────────────────────────
+  // METİN GİRİŞİ
+  // ─────────────────────────────────────────
+  function submitTxt(qid) {
+    const el = document.getElementById('tinput');
+    S.ans[qid] = el ? el.value.trim() : '';
+    next();
+  }
+  function skip(qid) { S.ans[qid] = ''; next(); }
+
+  // ─────────────────────────────────────────
+  // SONRAKI SORU
+  // ─────────────────────────────────────────
+  function next() {
+    const card = document.getElementById('qcard');
+    if (card) { card.classList.remove('active'); card.classList.add('leaving'); }
+    S.q++;
+    if (S.q >= QS.length) {
+      setTimeout(() => {
+        document.getElementById('progress-fill').style.width = '100%';
+        startAnalysis();
+      }, 340);
+    } else {
+      setTimeout(() => renderQ(S.q), 300);
+    }
+  }
+
+  // ─────────────────────────────────────────
+  // ANALİZ EKRANI
+  // ─────────────────────────────────────────
+  function startAnalysis() {
+    show('screen-analyzing');
+    S.profile = calcProfile(S.ans);
+    const eng  = calcEngagement(S.ans);
+    const share = eng >= 70 && S.ans.instagram ? 'HIGH' : eng >= 40 ? 'MEDIUM' : 'LOW';
+    sendData(S.ans, S.profile, eng, share);
+    setTimeout(() => {
+      renderResult(S.profile);
+      show('screen-result');
+      document.getElementById('progress-bar').style.display = 'none';
+    }, 2400);
+  }
+
+  // ─────────────────────────────────────────
+  // PROFİL ALGORİTMASI
+  // ─────────────────────────────────────────
+  function calcProfile(a) {
+    const sf = a.skinFeeling, mc = a.mainConcern,
+          dr = a.desiredResult, st = a.skinTrigger;
+
+    if ((sf==='very-oily'||sf==='slightly-oily') && dr==='glass-skin')  return 'glass-skin';
+    if (sf === 'sensitive')                                              return 'barrier-care';
+    if ((st==='stress'||st==='hormonal') && (mc==='acne'||mc==='acne-scars')) return 'seoul-calm';
+    if (sf==='dry' && (mc==='dryness'||dr==='hydration'))               return 'hydration';
+    if (mc==='dull' || dr==='bright-tone')                              return 'cherry-glow';
+    if ((sf==='very-oily'||sf==='slightly-oily') && (mc==='blackheads'||mc==='pores')) return 'pore-reset';
+    if (mc==='redness')                                                  return 'barrier-care';
+
+    // desired result fallback
+    const drMap = {
+      'glass-skin':'glass-skin', 'clean-pores':'pore-reset',
+      'calm-skin':'seoul-calm',  'hydration':'hydration',
+      'bright-tone':'cherry-glow', 'acne-control':'seoul-calm'
+    };
+    if (drMap[dr]) return drMap[dr];
+
+    // skin feeling fallback
+    const sfMap = {
+      'very-oily':'pore-reset', 'slightly-oily':'glass-skin',
+      'balanced':'cherry-glow', 'dry':'hydration', 'sensitive':'barrier-care'
+    };
+    return sfMap[sf] || 'glass-skin';
+  }
+
+  // ─────────────────────────────────────────
+  // ENGAGEMENT SKORU
+  // ─────────────────────────────────────────
+  function calcEngagement(a) {
+    let s = 40;
+    if (a.instagram && a.instagram.trim()) s += 20;
+    if (a.skincareTime === '10plus')        s += 20;
+    if (a.productPersonality === 'try-everything') s += 20;
+    else if (a.productPersonality === 'love-trends') s += 15;
+    if (['serum','sheet-mask'].includes(a.favoriteProduct)) s += 15;
+    else if (a.skincareTime === '5-10') s += 10;
+    return Math.min(s, 100);
+  }
+
+  // ─────────────────────────────────────────
+  // SONUÇ RENDER
+  // ─────────────────────────────────────────
+  function renderResult(key) {
+    const p   = PROFILES[key];
+    const lines = p.analysis.split('\n').join('<br>');
+    const pills = p.ingredients.map(i => `<span class="r-pill">${i}</span>`).join('');
+
+    document.getElementById('r-card').innerHTML = `
+      <div class="r-brand">✦ CHAE LEE ✦</div>
+
+      <div class="r-label">Seoul Skin Profile</div>
+      <div class="r-name">${p.name}</div>
+      <div class="r-emoji">${p.emoji}</div>
+
+      <div class="r-div"></div>
+      <p class="r-analysis">${lines}</p>
+
+      <div class="r-div"></div>
+      <div class="r-sec-label">Önerilen İçerikler</div>
+      <div class="r-pills">${pills}</div>
+
+      <div class="r-div"></div>
+      <div class="r-sec-label">Rutin Odağı</div>
+      <div class="r-routine">${p.routine}</div>
+
+      <div class="r-div"></div>
+      <div class="r-tagline">${p.tagline}</div>
+
+      <div class="r-cta">
+        <button class="btn-share" onclick="shareResult()">
+          Share Your Seoul Skin Profile ✦
+        </button>
+        <button class="btn-restart" onclick="restart()">Tekrar başla</button>
+      </div>
+
+      <div class="r-footer">find your profile · chaelee.com</div>
+    `;
+  }
+
+  // ─────────────────────────────────────────
+  // PAYLAŞ
+  // ─────────────────────────────────────────
+  function shareResult() {
+    const p = PROFILES[S.profile];
+    if (navigator.share) {
+      navigator.share({
+        title: 'Seoul Skin Profile — Chae Lee',
+        text: `Benim Kore cilt profilim: ${p.name} ${p.emoji}\n${p.tagline}`,
+        url: window.location.href
+      }).catch(() => {});
+    } else {
+      alert("Ekran görüntüsü alarak Instagram story'inde paylaşabilirsin! ✦");
+    }
+  }
+
+  // ─────────────────────────────────────────
+  // YENİDEN BAŞLAT
+  // ─────────────────────────────────────────
+  function restart() {
+    document.getElementById('progress-bar').style.display = 'none';
+    show('screen-welcome');
+  }
+
+  // ─────────────────────────────────────────
+  // GOOGLE SHEETS'E VERİ GÖNDER
+  // ─────────────────────────────────────────
+  function sendData(ans, profileKey, eng, share) {
+    if (!SHEET_URL || SHEET_URL === 'YOUR_APPS_SCRIPT_URL_HERE') return;
+    const p = PROFILES[profileKey];
+    fetch(SHEET_URL, {
+      method: 'POST',
+      mode:   'no-cors',
+      body: JSON.stringify({
+        timestamp:           new Date().toISOString(),
+        gender:              ans.gender || '',
+        ageRange:            ans.ageRange || '',
+        instagram:           ans.instagram || '',
+        skinFeeling:         ans.skinFeeling || '',
+        mainConcern:         ans.mainConcern || '',
+        skincareTime:        ans.skincareTime || '',
+        favoriteProduct:     ans.favoriteProduct || '',
+        skinTrigger:         ans.skinTrigger || '',
+        desiredResult:       ans.desiredResult || '',
+        productPersonality:  ans.productPersonality || '',
+        assignedProfile:     p.name,
+        profileId:           p.id,
+        suggestedIngredients: p.ingredients.join(', '),
+        engagementScore:     eng,
+        sharePotential:      share,
+        favoriteBrand:       ans.favoriteBrand || '',
+        favoriteItem:        ans.favoriteItem || '',
+        anticipatedBrand:    ans.anticipatedBrand || ''
+      })
+    }).catch(() => {});
+  }
+  </script>
+</body>
+</html>
